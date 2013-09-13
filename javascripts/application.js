@@ -8,19 +8,24 @@ $(function (){
     style: cytoscape.stylesheet()
       .selector('node')
         .css({
-          'shape': 'data(faveShape)',
           'width' : '96px',
           'height': '96px',
-//          'width': 'mapData(weight, 40, 80, 20, 60)',
-          'font-family' : 'Source Sans Pro, sans-serif',
           'font-size' : '18px', 
           'content': 'data(name)',
           'text-valign': 'bottom',
           'text-outline-width': 2,
           'text-outline-color': '#ff9733',
-          'background-color': 'data(faveColor)',
           'color': '#fff',
           'background-image' : 'images/node.png'
+        })
+      .selector('node.sub-content-node')
+        .css({
+          'width' : '180px',
+          'height': '40px',
+          'background-image' : 'none',
+          'shape': 'rectangle',
+          'text-valign': 'center',
+          'background-color' : '#CCCCCC'
         })
       .selector(':selected')
         .css({
@@ -35,6 +40,11 @@ $(function (){
           'line-color': 'data(faveColor)',
           'source-arrow-color': 'data(faveColor)',
           'target-arrow-color': 'data(faveColor)'
+        })
+      .selector('edge.sub-content-node-edge')
+        .css({
+          'color': "#ccccccc",
+          'target-arrow-shape': 'circle'
         })
       .selector('edge.questionable')
         .css({
@@ -76,15 +86,18 @@ $(function (){
     
     ready: function(){
       window.cy = this;
-      this.cytoscapePanzoom();
 
       cy.on('select', 'node', function(evt){
+          if(evt.cyTarget.hasClass('sub-content-node')){
+            return false;
+          }
+
           $('#context-menu').css({
             'display' : 'block',
             'left' : evt.cyTarget.renderedPosition('x') + 40 +  'px',
             'top' : evt.cyTarget.renderedPosition('y') - 40 + 'px',
-            'z-index' : '122'
-          }).click( function(evt){ console.log("EPPLO") });
+            'z-index' : '1002'
+          });
 
       });
       cy.on('unselect', 'node', function(evt){
@@ -94,13 +107,42 @@ $(function (){
             'top' :  '-100px',
           });
       });
-
-
-      
-
-      
       // giddy up
     }
+  });
+
+  $('#new-sub-node').on('click', function(){ 
+    parent = window.cy.$(":selected");
+
+    new_node_id = parent.id() + "_new";
+    new_edge_id = new_node_id + "_edge";
+
+    window.cy.add([
+      {
+        group: "nodes",
+        data: { 
+          weight: 75, 
+          id: new_node_id, 
+          name: 'Ny nod'
+        },
+        position: { 
+          x: parent.position('x') + 250, 
+          y: parent.position('y') - 20 
+        },
+        classes: 'sub-content-node'
+      },
+      {
+        group: "edges",
+        data: { 
+          id: new_edge_id, 
+          source: parent.id(), 
+          target: new_node_id, 
+          strength: 50 
+        }, 
+        classes: 'sub-content-node-edge',
+        selectable: false
+      }
+    ]);
   });
   
 
