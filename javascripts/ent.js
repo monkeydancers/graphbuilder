@@ -35,11 +35,46 @@ window.ent = Object.create({
 		// Hook on menu
 		this._setup_menu(); 
 
+
+
 		return this; 
 	},
 
+	add_main_node: function(){
+		$('#context-menu').trigger('menu.hide-menu');
+
+		parent = this.cy.$(":selected");
+
+		new_node_id = this.idCounter++ +  "_new";
+		new_edge_id = new_node_id + this.idCounter++ + "_edge";
+
+		this.cy.add([
+		  {
+		    group: "nodes",
+		    data: { 
+		      weight: 75, 
+		      id: new_node_id, 
+		      name: 'Ny nod'
+		    },
+		    position: { 
+		      x: parent.position('x') + 450, 
+		      y: parent.position('y') - 20 
+		    },
+		  },
+		  {
+		    group: "edges",
+		    data: { 
+		      id: new_edge_id, 
+		      source: parent.id(), 
+		      target: new_node_id, 
+		      strength: 120 
+		    }, 
+		  }
+		]);
+	},
 	// Add a new node to the selected node
 	add_node: function(){
+		$('#context-menu').trigger('menu.hide-menu');
 		var parent = this.cy.$(":selected");
 
 		new_node_id = parent.id() + this.idCounter++ +  "_new";
@@ -73,11 +108,18 @@ window.ent = Object.create({
 	},
 	// Private
 	_setup_menu: function(){
-		$('#new-sub-node').on('click', this.add_node.bind(this)); 		
+
+		$('#context-menu').bind('menu.hide-menu', function(){ 
+			$('#context-menu').css({'display' : 'none'});
+		});
+		$('#new-sub-node').on('click', this.add_node.bind(this)); 	
+		$('#new-node').on('click', this.add_main_node.bind(this)); 		
+	
 	}, 
 	_build_cytoscape: function(defaultNodes, defaultEdges){
 		var _t = this; 
-		$('#cy').cytoscape({
+		$cryto_container =  $('#cy');
+		cy = $cryto_container.cytoscape({
 		  layout: {
 		    name: 'circle'
 		  },
@@ -92,19 +134,50 @@ window.ent = Object.create({
 		  ready: function(){
 		  	_t.cy = this; 
 		  	_t._cytoscape_ready.apply(_t); 
+		  	$cryto_container.cytoscapePanzoom({
+		  		'maxZoom' : 2,
+		  		'zoomInIcon' : 'glyphicon glyphicon-plus',
+		  		'zoomOutIcon' : 'glyphicon glyphicon-minus',
+		  		'resetIcon' : 'glyphicon glyphicon-fullscreen',
+		  		'sliderHandleIcon' : ''
+		  	});
 		  }
 		});
+
+
 	},
 	_cytoscape_ready: function(){
+
 			this.cy.on('drag', 'node', function(evt){
-				$('#context-menu').css({'display' : 'none'});
+				$('#context-menu').trigger('menu.hide-menu');
 			});
+			this.cy.on('zoom', function(evt){
+				$('#context-menu').trigger('menu.hide-menu');
+			});
+			this.cy.on('pan', function(evt){
+				$('#context-menu').trigger('menu.hide-menu');
+			});
+
+			// Data updaters
+			this.cy.on('data', function(evt){
+				console.log("Data changed");
+			});
+			this.cy.on('free', function(evt){
+				console.log("Position changed");
+			});
+			this.cy.on('add', function(evt){
+				console.log("Element added");
+			});
+
+
+
 			this.cy.on('tap', 'node', function(evt){
 				if(evt.cyTarget.hasClass('sub-content-node')){
+				$('#context-menu').trigger('menu.hide-menu');
 					return false;
 				}
 				if($('#context-menu').css('display') == 'block'){
-					$('#context-menu').css({'display' : 'none'});
+				$('#context-menu').trigger('menu.hide-menu');
 					return false;
 				}
 
@@ -149,13 +222,13 @@ window.ent = Object.create({
 					'width': 'mapData(strength, 70, 100, 2, 6)',
 					'target-arrow-shape': 'triangle',
 					'source-arrow-shape': 'none',
-					'line-color': 'data(faveColor)',
-					'source-arrow-color': 'data(faveColor)',
-					'target-arrow-color': 'data(faveColor)'
+					'line-color' : '#FF9733',
+					'target-arrow-color': '#FF9733'
 			})
 			.selector('edge.sub-content-node-edge')
 				.css({
-					'color': "#CCCCCC",
+					'line-color': "#CCCCCC",
+					'target-arrow-color': "#CCCCCC", 
 					'target-arrow-shape': 'circle'
 			})
 			.selector('edge.questionable')
