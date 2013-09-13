@@ -151,15 +151,6 @@ window.ent = Object.create({
 
 
 	}, 
-
-	// not in use yet
-	_prepare_editor: function(cy){
-		cy.on('select', 'node', function(evt){
-			if(true){
-
-			}
-		});
-	},
 	_build_cytoscape: function(defaultNodes, defaultEdges){
 		var _t = this; 
 		$cryto_container =  $('#cy');
