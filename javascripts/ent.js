@@ -106,18 +106,40 @@ window.ent = Object.create({
 		  }
 		]);
 	},
+<<<<<<< HEAD
 
 	create_edge:function(){
 		var parent = this.cy.$(":selected");
 		$('#context-menu').trigger('menu.hide-menu');
 		$("#cy").cytoscapeEdgehandles('start', parent.id());
+=======
+	edit_node: function(evt){
+		// Daniel this might be a very cumbersome way to do this ? 
+
+		// node = this.$('#' + evt.data['menu'].data('active-node-id'));
+		node_id = '#' + evt.data['menu'].data('active-node-id')
+		node = this.cy.$(node_id);
+
+		$('#edit-node-form-placeholder').css({'display' : 'none'})
+		$('#edit-node-form').css({'display' : 'inline'})
+
+		$('#inputNodeName').val(node.data('name'));
+>>>>>>> 2ac734d40561c0e448bbdada1bf06b223d95e318
 	},
 	// Private
 	_setup_menu: function(){
 
-		$('#context-menu').bind('menu.hide-menu', function(){ 
-			$('#context-menu').css({'display' : 'none'});
+		var menu = $('#context-menu');
+		menu.bind('menu.hide-menu', function(){ 
+			menu.data('active-node-id',  null);
+			menu.css({'display' : 'none'});
 		});
+<<<<<<< HEAD
+=======
+		
+		$('#settings').on('click', {'menu' : menu}, this.edit_node.bind(this)); 	
+		$('#new-node').on('click', this.add_main_node.bind(this)); 		
+>>>>>>> 2ac734d40561c0e448bbdada1bf06b223d95e318
 		$('#new-sub-node').on('click', this.add_node.bind(this)); 	
 		$('#new-node').on('click', this.add_main_node.bind(this)); 		
 		$('#connect-nodes').on('mousedown', this.create_edge.bind(this));
@@ -221,6 +243,7 @@ window.ent = Object.create({
 					return false;
 				}
 
+				$('#context-menu').data('active-node-id', evt.cyTarget.id());
 				$('#context-menu').css({
 					'display' : 'block',
 					'left' : evt.cyTarget.renderedPosition('x') + 40 +  'px',
