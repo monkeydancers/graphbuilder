@@ -192,6 +192,12 @@ window.ent = Object.create({
 			this.cy.on('pan', function(evt){
 				$('#context-menu').trigger('menu.hide-menu');
 			});
+			this.cy.on('tap', function(evt){
+				console.log(evt.cyTarget);
+				if(evt.cyTarget === this.cy){
+					$('#context-menu').trigger('menu.hide-menu');
+				}
+			});
 
 			// Data updaters
 			this.cy.on('data', function(evt){
