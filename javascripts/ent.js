@@ -249,7 +249,6 @@ window.ent = Object.create({
 					'text-opacity': 0
 			});
 	}, 
-	// Under heavy development .daniel
 	__calculate_spare_node_position: function(parent){
 		var base_position = parent.position(); 
 		var _angles = []; 
