@@ -197,6 +197,10 @@ window.ent = Object.create({
 				}
 			});
 
+			this.cy.$('node').not('.sub-content-node').on('select', function(){
+				this.neighborhood('.sub-content-node').select();
+			});
+
 			// This is a temporary solution, the plugin itself needs
 			// extensive finetuning to work as expected, and remove the 
 			// multi-selection bug and similar .daniel
