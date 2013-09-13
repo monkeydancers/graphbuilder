@@ -31,6 +31,8 @@ window.ent = Object.create({
 		// Hook on menu
 		this._setup_menu(); 
 
+
+
 		return this; 
 	},
 
@@ -106,7 +108,8 @@ window.ent = Object.create({
 	}, 
 	_build_cytoscape: function(defaultNodes, defaultEdges){
 		var _t = this; 
-		$('#cy').cytoscape({
+		$cryto_container =  $('#cy');
+		$cryto_container.cytoscape({
 		  layout: {
 		    name: 'circle'
 		  },
@@ -121,6 +124,12 @@ window.ent = Object.create({
 		  ready: function(){
 		  	_t.cy = this; 
 		  	_t._cytoscape_ready.apply(_t); 
+		  	$cryto_container.cytoscapePanzoom({
+		  		'maxZoom' : 2,
+		  		'zoomInIcon' : 'glyphicon glyphicon-plus',
+		  		'zoomOutIcon' : 'glyphicon glyphicon-minus',
+		  		'resetIcon' : 'glyphicon glyphicon-fullscreen' 
+		  	});
 		  }
 		});
 	},
