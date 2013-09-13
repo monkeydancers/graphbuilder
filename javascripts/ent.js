@@ -250,26 +250,31 @@ window.ent = Object.create({
 			});
 	}, 
 	__calculate_spare_node_position: function(parent){
+		// Fetch the base position of the parent, this will be used as origin
 		var base_position = parent.position(); 
 		var _angles = []; 
+		// Fetch all nodes connected to the parent, determine the angle of 
+		// the edge, using 0° as horizontal X-axis on a normalized 360° circle.
 		parent.neighborhood('node').each(function(idx, el){
-				if(parent.id == el.target().id){
-					var _p = el.position();
-				}else{
-					var _p = el.position(); 				
-				}
+				var _p = el.position();
 				var angle = (Math.atan2((_p.y - base_position.y), (_p.x - base_position.x))*180.0)/Math.PI; 
 				if(angle < 0){
 					angle = 360-Math.abs(angle);
 				}
 				_angles.push(angle); 						
 		});
-		// We're not guaranteed formally that this is sorted correctly (but it should be) .daniel
+		// Sort the array in-place using not the standard lexicographical sort but a standard
+		// numeric sort - hooray for javascript weirdness! 
 		_angles.sort(function(a,b){
 			return (a-b);
 		});
+		// Store a back-reference to maximum gap between consecutive angles (since the list is 
+		// sorted, we know that two consecutive angles are increasing in acuteness). 
 		var mD = 0;
 		var max = null; 
+		// For each angle, check the difference between it and the next one, handling the case
+		// of the last angle in the list (which is compared against the first one), and fetch
+		// the ones with the greatest gap.
 		for(var i = 0; i < _angles.length; i++){
 			var next = _angles[i+1]; 
 			if(next){
@@ -284,16 +289,27 @@ window.ent = Object.create({
 			}
 		}
 
+		// Calculate the true angle of the mid of the resulting largest gap, 
+		// using the normalized coordinate system.
 		var true_angle = _angles[max] + (mD/2); 
 		if(true_angle > 360){
 			true_angle = true_angle - 360;
 		}
-		
+		// Convert the angle to radians, since sin/cos use radians.
 		var mDr = true_angle*(Math.PI/180);
 
+		// Increase distance if gap is too narrow
+		if(mD < 40){
+			factor = Math.ceil(mD/40)+1; 
+		}else{
+			factor = 1;
+		}
+
+		// Calculate the new position using standard cartesian coordinates.
+		// TODO - if our distance is too small here, increase the distance automagically .daniel
 		var new_pos = {
-			x: (Math.cos(mDr)*this.options.creation.defaultDistance) + base_position.x, 
-			y: (Math.sin(mDr)*this.options.creation.defaultDistance) + base_position.y
+			x: (Math.cos(mDr)*(this.options.creation.defaultDistance*factor)) + base_position.x, 
+			y: (Math.sin(mDr)*(this.options.creation.defaultDistance*factor)) + base_position.y
 		}
 		return new_pos; 
 	}
