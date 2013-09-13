@@ -109,7 +109,7 @@ window.ent = Object.create({
 	_build_cytoscape: function(defaultNodes, defaultEdges){
 		var _t = this; 
 		$cryto_container =  $('#cy');
-		$cryto_container.cytoscape({
+		cy = $cryto_container.cytoscape({
 		  layout: {
 		    name: 'circle'
 		  },
@@ -133,11 +133,26 @@ window.ent = Object.create({
 		  	});
 		  }
 		});
+
+
 	},
 	_cytoscape_ready: function(){
+
+
+			// This should probably be done with a trigger istead
+			hide_menu = function() { $('#context-menu').css({'display' : 'none'}); };
 			this.cy.on('drag', 'node', function(evt){
-				$('#context-menu').css({'display' : 'none'});
+				hide_menu();
 			});
+			this.cy.on('zoom', function(evt){
+				hide_menu();
+			});
+			this.cy.on('pan', function(evt){
+				hide_menu();
+			});
+
+
+
 			this.cy.on('tap', 'node', function(evt){
 				if(evt.cyTarget.hasClass('sub-content-node')){
 					return false;
