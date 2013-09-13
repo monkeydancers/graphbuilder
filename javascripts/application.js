@@ -1,3 +1,11 @@
+/*
+
+  Known gotchas: 
+    - Colors must be described in uppercase HEX, otherwise color parsing in cytoscape
+      breaks. /daniel
+
+*/
+
 
 $(function (){
   $('#cy').cytoscape({
