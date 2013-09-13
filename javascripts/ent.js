@@ -146,7 +146,6 @@ window.ent = Object.create({
 	},
 	_cytoscape_ready: function(){
 
-
 			this.cy.on('drag', 'node', function(evt){
 				$('#context-menu').trigger('menu.hide-menu');
 			});
@@ -155,6 +154,17 @@ window.ent = Object.create({
 			});
 			this.cy.on('pan', function(evt){
 				$('#context-menu').trigger('menu.hide-menu');
+			});
+
+			// Data updaters
+			this.cy.on('data', function(evt){
+				console.log("Data changed");
+			});
+			this.cy.on('free', function(evt){
+				console.log("Position changed");
+			});
+			this.cy.on('add', function(evt){
+				console.log("Element added");
 			});
 
 
