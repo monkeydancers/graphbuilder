@@ -34,6 +34,36 @@ window.ent = Object.create({
 		return this; 
 	},
 
+	add_main_node: function(){
+		parent = this.cy.$(":selected");
+
+		new_node_id = this.idCounter++ +  "_new";
+		new_edge_id = new_node_id + this.idCounter++ + "_edge";
+
+		this.cy.add([
+		  {
+		    group: "nodes",
+		    data: { 
+		      weight: 75, 
+		      id: new_node_id, 
+		      name: 'Ny nod'
+		    },
+		    position: { 
+		      x: parent.position('x') + 450, 
+		      y: parent.position('y') - 20 
+		    },
+		  },
+		  {
+		    group: "edges",
+		    data: { 
+		      id: new_edge_id, 
+		      source: parent.id(), 
+		      target: new_node_id, 
+		      strength: 120 
+		    }, 
+		  }
+		]);
+	},
 	// Add a new node to the selected node
 	add_node: function(){
 		parent = this.cy.$(":selected");
@@ -50,7 +80,7 @@ window.ent = Object.create({
 		      name: 'Ny nod'
 		    },
 		    position: { 
-		      x: parent.position('x') + 250, 
+		      x: parent.position('x') + 210, 
 		      y: parent.position('y') - 20 
 		    },
 		    classes: 'sub-content-node'
@@ -70,7 +100,9 @@ window.ent = Object.create({
 	},
 	// Private
 	_setup_menu: function(){
-		$('#new-sub-node').on('click', this.add_node.bind(this)); 		
+		$('#new-sub-node').on('click', this.add_node.bind(this)); 	
+		$('#new-node').on('click', this.add_main_node.bind(this)); 		
+	
 	}, 
 	_build_cytoscape: function(defaultNodes, defaultEdges){
 		var _t = this; 
@@ -146,13 +178,13 @@ window.ent = Object.create({
 					'width': 'mapData(strength, 70, 100, 2, 6)',
 					'target-arrow-shape': 'triangle',
 					'source-arrow-shape': 'none',
-					'line-color': 'data(faveColor)',
-					'source-arrow-color': 'data(faveColor)',
-					'target-arrow-color': 'data(faveColor)'
+					'line-color' : '#FF9733',
+					'target-arrow-color': '#FF9733'
 			})
 			.selector('edge.sub-content-node-edge')
 				.css({
-					'color': "#CCCCCC",
+					'line-color': "#CCCCCC",
+					'target-arrow-color': "#CCCCCC", 
 					'target-arrow-shape': 'circle'
 			})
 			.selector('edge.questionable')
