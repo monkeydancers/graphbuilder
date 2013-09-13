@@ -116,9 +116,21 @@ window.ent = Object.create({
 
 		$('#edit-node-form-placeholder').css({'display' : 'none'})
 		$('#edit-node-form').css({'display' : 'inline'})
+		$('#inputNodeName').val(node.data('name'));	
+		$('#edit-node-form .btn-primary').bind('click', {'node' : node}, this._update_node);
 
-		$('#inputNodeName').val(node.data('name'));
 	},
+	_update_node: function(evt){
+		console.log();
+		evt.data['node'].data('name', $('#inputNodeName').val() ); 
+
+		$('#edit-node-form .btn-primary').unbind('click');
+
+		$('#edit-node-form-placeholder').css({'display' : 'inline'});
+		$('#edit-node-form').css({'display' : 'none'});
+		evt.preventDefault();
+
+	},	
 	connect_nodes: function(){
 		// To DS 
 	},
