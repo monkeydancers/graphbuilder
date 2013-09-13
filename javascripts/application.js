@@ -43,7 +43,7 @@ $(function (){
         })
       .selector('edge.sub-content-node-edge')
         .css({
-          'color': "#ccccccc",
+          'color': "#CCCCCC",
           'target-arrow-shape': 'circle'
         })
       .selector('edge.questionable')
