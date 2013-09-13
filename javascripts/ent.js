@@ -107,7 +107,12 @@ window.ent = Object.create({
 		]);
 
 	},
-	edit_node: function(){
+	edit_node: function(evt){
+		// Daniel this might be a very cumbersome way to do this ? 
+
+		// node = this.$('#' + evt.data['menu'].data('active-node-id'));
+		node_id = '#' + evt.data['menu'].data('active-node-id')
+		this.cy.$(node_id)
 
 	},
 	connect_nodes: function(){
@@ -117,11 +122,13 @@ window.ent = Object.create({
 	// Private
 	_setup_menu: function(){
 
-		$('#context-menu').bind('menu.hide-menu', function(){ 
-			$('#context-menu').css({'display' : 'none'});
+		var menu = $('#context-menu');
+		menu.bind('menu.hide-menu', function(){ 
+			menu.data('active-node-id',  null);
+			menu.css({'display' : 'none'});
 		});
 		
-		$('#settings').on('click', this.edit_node.bind(this)); 	
+		$('#settings').on('click', {'menu' : menu}, this.edit_node.bind(this)); 	
 		$('#new-node').on('click', this.add_main_node.bind(this)); 		
 		$('#new-sub-node').on('click', this.add_node.bind(this)); 	
 		$('#connect-nodes').on('click', this.connect_nodes.bind(this)); 	
@@ -208,6 +215,7 @@ window.ent = Object.create({
 					return false;
 				}
 
+				$('#context-menu').data('active-node-id', evt.cyTarget.id());
 				$('#context-menu').css({
 					'display' : 'block',
 					'left' : evt.cyTarget.renderedPosition('x') + 40 +  'px',
