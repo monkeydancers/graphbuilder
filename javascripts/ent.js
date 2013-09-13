@@ -112,8 +112,12 @@ window.ent = Object.create({
 
 		// node = this.$('#' + evt.data['menu'].data('active-node-id'));
 		node_id = '#' + evt.data['menu'].data('active-node-id')
-		this.cy.$(node_id)
+		node = this.cy.$(node_id);
 
+		$('#edit-node-form-placeholder').css({'display' : 'none'})
+		$('#edit-node-form').css({'display' : 'inline'})
+
+		$('#inputNodeName').val(node.data('name'));
 	},
 	connect_nodes: function(){
 		// To DS 
