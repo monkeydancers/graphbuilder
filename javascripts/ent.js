@@ -171,11 +171,11 @@ window.ent = Object.create({
 
 			this.cy.on('tap', 'node', function(evt){
 				if(evt.cyTarget.hasClass('sub-content-node')){
-					hide_menu();
+				$('#context-menu').trigger('menu.hide-menu');
 					return false;
 				}
 				if($('#context-menu').css('display') == 'block'){
-					hide_menu();
+				$('#context-menu').trigger('menu.hide-menu');
 					return false;
 				}
 
