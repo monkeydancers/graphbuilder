@@ -8,12 +8,8 @@
 
 
 $(function (){
-  $('#cy').cytoscape({
-    layout: {
-      name: 'circle'
-    },
-    
-    style: cytoscape.stylesheet()
+    window.idCounter = 12;
+    var defaultSty = window.defaultSty = cytoscape.stylesheet()
       .selector('node')
         .css({
           'width' : '96px',
@@ -22,7 +18,7 @@ $(function (){
           'content': 'data(name)',
           'text-valign': 'bottom',
           'text-outline-width': 2,
-          'text-outline-color': '#ff9733',
+          'text-outline-color': '#FF9733',
           'color': '#fff',
           'background-image' : 'images/node.png'
         })
@@ -38,7 +34,7 @@ $(function (){
       .selector(':selected')
         .css({
           'border-width': 3,
-          'border-color': '#ffffff'
+          'border-color': '#FFFFFF'
         })
       .selector('edge')
         .css({
@@ -63,7 +59,16 @@ $(function (){
         .css({
           'opacity': 0.25,
           'text-opacity': 0
-        }),
+        });
+
+
+  $('#cy').cytoscape({
+    layout: {
+      name: 'circle'
+    },
+    showOverlay: false,
+    
+    style: defaultSty,
     
     elements: {
       nodes: [
@@ -91,12 +96,17 @@ $(function (){
 
       ]
     },
-    
     ready: function(){
       window.cy = this;
-
-      cy.on('select', 'node', function(evt){
+      cy.on('drag', 'node', function(evt){
+            $('#context-menu').css({'display' : 'none'});
+      });
+      cy.on('tap', 'node', function(evt){
           if(evt.cyTarget.hasClass('sub-content-node')){
+            return false;
+          }
+          if($('#context-menu').css('display') == 'block'){
+            $('#context-menu').css({'display' : 'none'});
             return false;
           }
 
@@ -108,22 +118,14 @@ $(function (){
           });
 
       });
-      cy.on('unselect', 'node', function(evt){
-          $('#context-menu').css({
-            'display' : 'none',
-            'left' : '-100px',
-            'top' :  '-100px',
-          });
-      });
-      // giddy up
     }
   });
 
   $('#new-sub-node').on('click', function(){ 
     parent = window.cy.$(":selected");
 
-    new_node_id = parent.id() + "_new";
-    new_edge_id = new_node_id + "_edge";
+    new_node_id = parent.id() + window.idCounter++ +  "_new";
+    new_edge_id = new_node_id + window.idCounter++ + "_edge";
 
     window.cy.add([
       {
