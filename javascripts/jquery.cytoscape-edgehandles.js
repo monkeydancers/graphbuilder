@@ -422,7 +422,6 @@
 						drawHandle(hx, hy, hr);
 
 						node.trigger('cyedgehandles.showhandle');
-						
 
 						function mdownHandler(e){
 							$container[0].removeEventListener('mousedown', mdownHandler, true);
@@ -480,7 +479,6 @@
 						
 						function moveHandler(e){
 							// console.log("mousemove moveHandler %s %o", node.id(), node);
-							
 							var x = e.pageX - $container.offset().left;
 							var y = e.pageY - $container.offset().top;
 

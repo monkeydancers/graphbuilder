@@ -49,6 +49,9 @@ window.ent = Object.create({
 		new_node_id = this.idCounter++ +  "_new";
 		new_edge_id = new_node_id + this.idCounter++ + "_edge";
 
+		var pos = this.__calculate_spare_node_position(parent); 
+
+
 		this.cy.add([
 		  {
 		    group: "nodes",
@@ -57,10 +60,7 @@ window.ent = Object.create({
 		      id: new_node_id, 
 		      name: 'Ny nod'
 		    },
-		    position: { 
-		      x: parent.position('x') + 450, 
-		      y: parent.position('y') - 20 
-		    },
+		    position: pos,
 		  },
 		  {
 		    group: "edges",
@@ -105,38 +105,24 @@ window.ent = Object.create({
 		    selectable: false
 		  }
 		]);
-
-	},
-	edit_node: function(){
-
-	},
-	connect_nodes: function(){
-		// To DS 
 	},
 
+	create_edge:function(){
+		var parent = this.cy.$(":selected");
+		$('#context-menu').trigger('menu.hide-menu');
+		$("#cy").cytoscapeEdgehandles('start', parent.id());
+	},
 	// Private
 	_setup_menu: function(){
 
 		$('#context-menu').bind('menu.hide-menu', function(){ 
 			$('#context-menu').css({'display' : 'none'});
 		});
-		
-		$('#settings').on('click', this.edit_node.bind(this)); 	
-		$('#new-node').on('click', this.add_main_node.bind(this)); 		
 		$('#new-sub-node').on('click', this.add_node.bind(this)); 	
-		$('#connect-nodes').on('click', this.connect_nodes.bind(this)); 	
-
-
+		$('#new-node').on('click', this.add_main_node.bind(this)); 		
+		$('#connect-nodes').on('mousedown', this.create_edge.bind(this));
+	
 	}, 
-
-	// not in use yet
-	_prepare_editor: function(cy){
-		cy.on('select', 'node', function(evt){
-			if(true){
-
-			}
-		});
-	},
 	_build_cytoscape: function(defaultNodes, defaultEdges){
 		var _t = this; 
 		$cryto_container =  $('#cy');
@@ -196,7 +182,34 @@ window.ent = Object.create({
 				}
 			});
 
-
+			// This is a temporary solution, the plugin itself needs
+			// extensive finetuning to work as expected, and remove the 
+			// multi-selection bug and similar .daniel
+			$("#cy").cytoscapeEdgehandles({
+				lineType: "straight",
+				preview: false,
+				handleSize: 12,
+				handleLineWidth:5,
+				handleColor: "#5CC2ED",
+				edgeType: function(){
+					return 'flat';
+				},
+				nodeParams: function(){
+					return {
+						classes: "intermediate"
+					};
+				},
+				start: function( sourceNode ){
+					console.log("start(%o)", sourceNode);
+				},
+				complete: function( sourceNode, targetNodes, added ){
+					console.log("complete(%o, %o, %o)", sourceNode, targetNodes, added);
+					added.data('strength', 120);
+				},
+				stop: function( sourceNode ){
+					console.log("stop(%o)", sourceNode);
+				}
+			});
 
 			this.cy.on('tap', 'node', function(evt){
 				if(evt.cyTarget.hasClass('sub-content-node')){
@@ -263,6 +276,25 @@ window.ent = Object.create({
 					'line-style': 'dotted',
 					'target-arrow-shape': 'none'
 			})
+				.selector("edge.ui-cytoscape-edgehandles-preview")
+					.css({
+						"line-color": "#5CC2ED",
+						"source-arrow-color": "#5CC2ED",
+						"target-arrow-color": "#5CC2ED", 
+						'target-arrow-shape': 'triangle',
+						'source-arrow-shape': 'none'
+					})
+
+			.selector(".ui-cytoscape-edgehandles-source")
+				.css({
+					"border-color": "#5CC2ED",
+					"border-width": 3
+				})
+				.selector(".ui-cytoscape-edgehandles-target")
+					.css({
+						"border-color": "#5CC2ED",
+						"border-width": 3
+					})
 			.selector('.faded')
 				.css({
 					'opacity': 0.25,
