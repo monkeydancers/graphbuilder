@@ -128,7 +128,8 @@ window.ent = Object.create({
 		  		'maxZoom' : 2,
 		  		'zoomInIcon' : 'glyphicon glyphicon-plus',
 		  		'zoomOutIcon' : 'glyphicon glyphicon-minus',
-		  		'resetIcon' : 'glyphicon glyphicon-fullscreen' 
+		  		'resetIcon' : 'glyphicon glyphicon-fullscreen',
+		  		'sliderHandleIcon' : ''
 		  	});
 		  }
 		});
