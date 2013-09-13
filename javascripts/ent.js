@@ -1,0 +1,170 @@
+window.ent = Object.create({
+	initialize: function(container, options){
+
+		this.options = $.extend({
+			cytoscape: {
+				defaultNodes:  [
+		      { data: { id: 'j', name: 'Scen 1', weight: 65, faveColor: '#ff9733', faveShape: 'circle' } },
+		      { data: { id: 'e', name: 'Scen 2', weight: 45, faveColor: '#ff9733', faveShape: 'circle' } },
+		      { data: { id: 'k', name: 'Scen 3', weight: 75, faveColor: '#ff9733', faveShape: 'circle' } },
+		      { data: { id: 'g', name: 'Scen 4', weight: 70, faveColor: '#ff9733', faveShape: 'circle' } },
+		      { data: { id: 'h', name: 'Scen 5', weight: 70, faveColor: '#ff9733', faveShape: 'circle' } }
+
+		    ], 
+		    defaultEdges: [
+		      { data: { source: 'j', target: 'e', faveColor: '#ff9733', strength: 120 } },		     
+		      { data: { source: 'e', target: 'k', faveColor: '#ff9733', strength: 120 } },
+		      { data: { source: 'e', target: 'g', faveColor: '#ff9733', strength: 60 }, classes: 'questionable' },		      
+		      { data: { source: 'k', target: 'g', faveColor: '#ff9733', strength: 120 } },		      
+		      { data: { source: 'k', target: 'h', faveColor: '#ff9733', strength: 120 } },
+		      { data: { source: 'g', target: 'h', faveColor: '#ff9733', strength: 120 } }
+		    ]
+			}
+		}, (options || {})); 
+		
+		this.idCounter = 12; 
+		
+		// Build a stylesheet using the cytoscape default stylesheet
+		this.defaultStyleSheet 	= this._build_style_sheet(); 
+		// Construct the cytoscape object, pass along default data
+		this._build_cytoscape(this.options.cytoscape.defaultNodes, this.options.cytoscape.defaultEdges); 
+		// Hook on menu
+		this._setup_menu(); 
+
+		return this; 
+	},
+
+	// Add a new node to the selected node
+	add_node: function(){
+		parent = this.cy.$(":selected");
+
+		new_node_id = parent.id() + this.idCounter++ +  "_new";
+		new_edge_id = new_node_id + this.idCounter++ + "_edge";
+
+		this.cy.add([
+		  {
+		    group: "nodes",
+		    data: { 
+		      weight: 75, 
+		      id: new_node_id, 
+		      name: 'Ny nod'
+		    },
+		    position: { 
+		      x: parent.position('x') + 250, 
+		      y: parent.position('y') - 20 
+		    },
+		    classes: 'sub-content-node'
+		  },
+		  {
+		    group: "edges",
+		    data: { 
+		      id: new_edge_id, 
+		      source: parent.id(), 
+		      target: new_node_id, 
+		      strength: 50 
+		    }, 
+		    classes: 'sub-content-node-edge',
+		    selectable: false
+		  }
+		]);
+	},
+	// Private
+	_setup_menu: function(){
+		$('#new-sub-node').on('click', this.add_node.bind(this)); 		
+	}, 
+	_build_cytoscape: function(defaultNodes, defaultEdges){
+		var _t = this; 
+		$('#cy').cytoscape({
+		  layout: {
+		    name: 'circle'
+		  },
+		  showOverlay: false,
+		  
+		  style: this.defaultStyleSheet,
+		  
+		  elements: {
+		    nodes: defaultNodes,
+		    edges: defaultEdges 
+		  },
+		  ready: function(){
+		  	_t.cy = this; 
+		  	_t._cytoscape_ready.apply(_t); 
+		  }
+		});
+	},
+	_cytoscape_ready: function(){
+			this.cy.on('drag', 'node', function(evt){
+				$('#context-menu').css({'display' : 'none'});
+			});
+			this.cy.on('tap', 'node', function(evt){
+				if(evt.cyTarget.hasClass('sub-content-node')){
+					return false;
+				}
+				if($('#context-menu').css('display') == 'block'){
+					$('#context-menu').css({'display' : 'none'});
+					return false;
+				}
+
+				$('#context-menu').css({
+					'display' : 'block',
+					'left' : evt.cyTarget.renderedPosition('x') + 40 +  'px',
+					'top' : evt.cyTarget.renderedPosition('y') - 40 + 'px',
+					'z-index' : '1002'
+				});
+			});
+	},
+	_build_style_sheet: function(){
+		return cytoscape.stylesheet()
+			.selector('node')
+		  	.css({
+		    	'width' : '96px',
+		      'height': '96px',
+		      'font-size' : '18px', 
+		      'content': 'data(name)',
+		      'text-valign': 'bottom',
+		      'text-outline-width': 2,
+		      'text-outline-color': '#FF9733',
+		      'color': '#fff',
+		      'background-image' : 'images/node.png'
+		  })
+		  .selector('node.sub-content-node')
+				.css({
+					'width' : '180px',
+					'height': '40px',
+					'background-image' : 'none',
+					'shape': 'rectangle',
+					'text-valign': 'center',
+					'background-color' : '#CCCCCC'
+			})
+			.selector(':selected')
+				.css({
+					'border-width': 3,
+					'border-color': '#FFFFFF'
+			})
+			.selector('edge')
+				.css({
+					'width': 'mapData(strength, 70, 100, 2, 6)',
+					'target-arrow-shape': 'triangle',
+					'source-arrow-shape': 'none',
+					'line-color': 'data(faveColor)',
+					'source-arrow-color': 'data(faveColor)',
+					'target-arrow-color': 'data(faveColor)'
+			})
+			.selector('edge.sub-content-node-edge')
+				.css({
+					'color': "#CCCCCC",
+					'target-arrow-shape': 'circle'
+			})
+			.selector('edge.questionable')
+				.css({
+					'line-style': 'dotted',
+					'target-arrow-shape': 'none'
+			})
+			.selector('.faded')
+				.css({
+					'opacity': 0.25,
+					'text-opacity': 0
+			});
+	}
+
+});
