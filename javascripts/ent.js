@@ -19,6 +19,10 @@ window.ent = Object.create({
 		      { data: { source: 'k', target: 'h', faveColor: '#ff9733', strength: 120 } },
 		      { data: { source: 'g', target: 'h', faveColor: '#ff9733', strength: 120 } }
 		    ]
+			}, 
+			creation: {
+				defaultAngle: 20, 
+				defaultDistance: 200
 			}
 		}, (options || {})); 
 		
@@ -36,11 +40,12 @@ window.ent = Object.create({
 
 	// Add a new node to the selected node
 	add_node: function(){
-		parent = this.cy.$(":selected");
+		var parent = this.cy.$(":selected");
 
 		new_node_id = parent.id() + this.idCounter++ +  "_new";
 		new_edge_id = new_node_id + this.idCounter++ + "_edge";
 
+		var pos = this.__calculate_spare_node_position(parent); 
 		this.cy.add([
 		  {
 		    group: "nodes",
@@ -49,10 +54,7 @@ window.ent = Object.create({
 		      id: new_node_id, 
 		      name: 'Ny nod'
 		    },
-		    position: { 
-		      x: parent.position('x') + 250, 
-		      y: parent.position('y') - 20 
-		    },
+		    position: pos,
 		    classes: 'sub-content-node'
 		  },
 		  {
@@ -67,6 +69,7 @@ window.ent = Object.create({
 		    selectable: false
 		  }
 		]);
+
 	},
 	// Private
 	_setup_menu: function(){
@@ -165,6 +168,56 @@ window.ent = Object.create({
 					'opacity': 0.25,
 					'text-opacity': 0
 			});
-	}
+	}, 
+	// Under heavy development .daniel
+	__calculate_spare_node_position: function(parent){
+		var base_position = parent.position(); 
+		var _angles = []; 
+		parent.neighborhood().each(function(idx, el){
+			if(!el.isNode()){
+				// Purposefully left empty
+			}else{
+				if(parent.id == el.target().id){
+					var _p = el.position();
+				}else{
+					var _p = el.position(); 				
+				}
+				var angle = (Math.atan2((_p.y - base_position.y), (_p.x - base_position.x))*180.0)/Math.PI; 
+				if(angle < 0){
+					angle = 360-Math.abs(angle);
+				}
+				_angles.push(angle); 						
+			}
+		});
+		// We're not guaranteed formally that this is sorted correctly (but it should be) .daniel
+		_angles.sort();
+		var mD = 0;
+		var max = null; 
+		for(var i = 0; i < _angles.length; i++){
+			var next = _angles[i+1]; 
+			if(next){
+				var _d = next - _angles[i]; 				
+			}else{
+				// This is the last element
+				var _d = (360 - _angles[i]) + _angles[0]; 
+			}			
+			if(_d > mD){
+				mD = _d;
+				max = i; 
+			}
+		}
 
+		var true_angle = _angles[max] + (mD/2); 
+		if(true_angle > 360){
+			true_angle = true_angle - 360;
+		}
+		
+		var mDr = true_angle*(Math.PI/180);
+
+		var new_pos = {
+			x: (Math.cos(mDr)*this.options.creation.defaultDistance) + base_position.x, 
+			y: (Math.sin(mDr)*this.options.creation.defaultDistance) + base_position.y
+		}
+		return new_pos; 
+	}
 });
