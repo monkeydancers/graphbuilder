@@ -106,16 +106,36 @@ window.ent = Object.create({
 		]);
 
 	},
+	edit_node: function(){
+
+	},
+	connect_nodes: function(){
+		// To DS 
+	},
+
 	// Private
 	_setup_menu: function(){
 
 		$('#context-menu').bind('menu.hide-menu', function(){ 
 			$('#context-menu').css({'display' : 'none'});
 		});
-		$('#new-sub-node').on('click', this.add_node.bind(this)); 	
+		
+		$('#settings').on('click', this.edit_node.bind(this)); 	
 		$('#new-node').on('click', this.add_main_node.bind(this)); 		
-	
+		$('#new-sub-node').on('click', this.add_node.bind(this)); 	
+		$('#connect-nodes').on('click', this.connect_nodes.bind(this)); 	
+
+
 	}, 
+
+	// not in use yet
+	_prepare_editor: function(cy){
+		cy.on('select', 'node', function(evt){
+			if(true){
+
+			}
+		});
+	},
 	_build_cytoscape: function(defaultNodes, defaultEdges){
 		var _t = this; 
 		$cryto_container =  $('#cy');
