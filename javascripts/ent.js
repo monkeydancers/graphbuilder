@@ -37,6 +37,8 @@ window.ent = Object.create({
 	},
 
 	add_main_node: function(){
+		$('#context-menu').trigger('menu.hide-menu');
+
 		parent = this.cy.$(":selected");
 
 		new_node_id = this.idCounter++ +  "_new";
@@ -68,6 +70,8 @@ window.ent = Object.create({
 	},
 	// Add a new node to the selected node
 	add_node: function(){
+		$('#context-menu').trigger('menu.hide-menu');
+
 		parent = this.cy.$(":selected");
 
 		new_node_id = parent.id() + this.idCounter++ +  "_new";
@@ -102,6 +106,10 @@ window.ent = Object.create({
 	},
 	// Private
 	_setup_menu: function(){
+
+		$('#context-menu').bind('menu.hide-menu', function(){ 
+			$('#context-menu').css({'display' : 'none'});
+		});
 		$('#new-sub-node').on('click', this.add_node.bind(this)); 	
 		$('#new-node').on('click', this.add_main_node.bind(this)); 		
 	
@@ -139,26 +147,25 @@ window.ent = Object.create({
 	_cytoscape_ready: function(){
 
 
-			// This should probably be done with a trigger istead
-			hide_menu = function() { $('#context-menu').css({'display' : 'none'}); };
 			this.cy.on('drag', 'node', function(evt){
-				hide_menu();
+				$('#context-menu').trigger('menu.hide-menu');
 			});
 			this.cy.on('zoom', function(evt){
-				hide_menu();
+				$('#context-menu').trigger('menu.hide-menu');
 			});
 			this.cy.on('pan', function(evt){
-				hide_menu();
+				$('#context-menu').trigger('menu.hide-menu');
 			});
 
 
 
 			this.cy.on('tap', 'node', function(evt){
 				if(evt.cyTarget.hasClass('sub-content-node')){
+					hide_menu();
 					return false;
 				}
 				if($('#context-menu').css('display') == 'block'){
-					$('#context-menu').css({'display' : 'none'});
+					hide_menu();
 					return false;
 				}
 
