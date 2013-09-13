@@ -57,18 +57,18 @@ $(function (){
 
       ],
       edges: [
-        { data: { source: 'j', target: 'e', faveColor: '#ff9733', strength: 90 } },
+        { data: { source: 'j', target: 'e', faveColor: '#ff9733', strength: 120 } },
 
        
-        { data: { source: 'e', target: 'k', faveColor: '#ff9733', strength: 95 } },
+        { data: { source: 'e', target: 'k', faveColor: '#ff9733', strength: 120 } },
         { data: { source: 'e', target: 'g', faveColor: '#ff9733', strength: 60 }, classes: 'questionable' },
         
 
-        { data: { source: 'k', target: 'g', faveColor: '#ff9733', strength: 90 } },
+        { data: { source: 'k', target: 'g', faveColor: '#ff9733', strength: 120 } },
         
-        { data: { source: 'k', target: 'h', faveColor: '#ff9733', strength: 85 } },
+        { data: { source: 'k', target: 'h', faveColor: '#ff9733', strength: 120 } },
 
-        { data: { source: 'g', target: 'h', faveColor: '#ff9733', strength: 95 } },
+        { data: { source: 'g', target: 'h', faveColor: '#ff9733', strength: 120 } },
 
 
       ]
@@ -76,14 +76,16 @@ $(function (){
     
     ready: function(){
       window.cy = this;
+      this.cytoscapePanzoom();
 
       cy.on('select', 'node', function(evt){
-          console.log(evt.cyTarget.renderedPosition());
           $('#context-menu').css({
             'display' : 'block',
             'left' : evt.cyTarget.renderedPosition('x') + 40 +  'px',
             'top' : evt.cyTarget.renderedPosition('y') - 40 + 'px',
-          });
+            'z-index' : '122'
+          }).click( function(evt){ console.log("EPPLO") });
+
       });
       cy.on('unselect', 'node', function(evt){
           $('#context-menu').css({
@@ -101,6 +103,5 @@ $(function (){
     }
   });
   
-  $("#context-menu").on('mouseover', function(evt){ console.log("EPPLO") });
 
 });
