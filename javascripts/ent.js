@@ -2,6 +2,7 @@ window.ent = Object.create({
 	initialize: function(container, options){
 
 		this.options = $.extend({
+			debug: false,
 			cytoscape: {
 				defaultNodes:  [
 		      { data: { id: 'j', name: 'Scen 1', weight: 65, faveColor: '#ff9733', faveShape: 'circle' } },
@@ -160,13 +161,19 @@ window.ent = Object.create({
 
 			// Data updaters
 			this.cy.on('data', function(evt){
-				console.log("Data changed");
+				if(this.options.debug){
+					console.log("Data changed");					
+				}
 			});
 			this.cy.on('free', function(evt){
-				console.log("Position changed");
+				if(this.options.debug){
+					console.log("Position changed");					
+				}
 			});
 			this.cy.on('add', function(evt){
-				console.log("Element added");
+				if(this.options.debug){
+					console.log("Element added");					
+				}
 			});
 
 
@@ -246,10 +253,7 @@ window.ent = Object.create({
 	__calculate_spare_node_position: function(parent){
 		var base_position = parent.position(); 
 		var _angles = []; 
-		parent.neighborhood().each(function(idx, el){
-			if(!el.isNode()){
-				// Purposefully left empty
-			}else{
+		parent.neighborhood('node').each(function(idx, el){
 				if(parent.id == el.target().id){
 					var _p = el.position();
 				}else{
@@ -260,10 +264,11 @@ window.ent = Object.create({
 					angle = 360-Math.abs(angle);
 				}
 				_angles.push(angle); 						
-			}
 		});
 		// We're not guaranteed formally that this is sorted correctly (but it should be) .daniel
-		_angles.sort();
+		_angles.sort(function(a,b){
+			return (a-b);
+		});
 		var mD = 0;
 		var max = null; 
 		for(var i = 0; i < _angles.length; i++){
