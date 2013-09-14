@@ -108,16 +108,20 @@ window.ent = Object.create({
 
 	},
 	edit_node: function(evt){
+
 		// Daniel this might be a very cumbersome way to do this ? 
 
 		// node = this.$('#' + evt.data['menu'].data('active-node-id'));
 		node_id = '#' + evt.data['menu'].data('active-node-id')
 		node = this.cy.$(node_id);
 
+		console.log(node_id);
+
 		$('#edit-node-form-placeholder').css({'display' : 'none'})
 		$('#edit-node-form').css({'display' : 'inline'})
 		$('#inputNodeName').val(node.data('name'));	
 		$('#edit-node-form .btn-primary').bind('click', {'node' : node}, this._update_node);
+		$('#context-menu').trigger('menu.hide-menu');
 
 	},
 	_update_node: function(evt){
@@ -192,12 +196,7 @@ window.ent = Object.create({
 			this.cy.on('pan', function(evt){
 				$('#context-menu').trigger('menu.hide-menu');
 			});
-			this.cy.on('tap', function(evt){
-				console.log(evt.cyTarget);
-				if(evt.cyTarget === this.cy){
-					$('#context-menu').trigger('menu.hide-menu');
-				}
-			});
+
 
 			// Data updaters
 			this.cy.on('data', function(evt){
@@ -220,7 +219,19 @@ window.ent = Object.create({
 
 			this.cy.on('tap', 'node', function(evt){
 				if(evt.cyTarget.hasClass('sub-content-node')){
-				$('#context-menu').trigger('menu.hide-menu');
+					$('#context-menu').data('active-node-id', evt.cyTarget.id());
+
+					$('#new-node').hide();
+					$('#new-sub-node').hide();
+					$('#connect-nodes').hide();
+
+					
+					$('#context-menu').css({
+						'display' : 'block',
+						'left' : evt.cyTarget.renderedPosition('x') + 40 +  'px',
+						'top' : evt.cyTarget.renderedPosition('y') - 40 + 'px',
+						'z-index' : '1002'
+					});
 					return false;
 				}
 				if($('#context-menu').css('display') == 'block'){
@@ -229,6 +240,9 @@ window.ent = Object.create({
 				}
 
 				$('#context-menu').data('active-node-id', evt.cyTarget.id());
+					$('#new-node').show();
+					$('#new-sub-node').show();
+					$('#connect-nodes').show();
 				$('#context-menu').css({
 					'display' : 'block',
 					'left' : evt.cyTarget.renderedPosition('x') + 40 +  'px',
