@@ -15,9 +15,7 @@ window.ent = Object.create({
 		    defaultEdges: [
 		      { data: { source: 'j', target: 'e', faveColor: '#ff9733', strength: 120 } },		     
 		      { data: { source: 'e', target: 'k', faveColor: '#ff9733', strength: 120 } },
-		      { data: { source: 'e', target: 'g', faveColor: '#ff9733', strength: 60 }, classes: 'questionable' },		      
-		      { data: { source: 'k', target: 'g', faveColor: '#ff9733', strength: 120 } },		      
-		      { data: { source: 'k', target: 'h', faveColor: '#ff9733', strength: 120 } },
+		      { data: { source: 'k', target: 'g', faveColor: '#ff9733', strength: 120 } },
 		      { data: { source: 'g', target: 'h', faveColor: '#ff9733', strength: 120 } }
 		    ]
 			}, 
